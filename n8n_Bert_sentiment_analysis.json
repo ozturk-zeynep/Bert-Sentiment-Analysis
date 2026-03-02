@@ -1,0 +1,151 @@
+{
+  "name": "Bert_sentiment_analysis",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d8b1c9a0-e816-4cf7-af96-2b3d62d38412",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/analyze",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.review }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        640,
+        0
+      ],
+      "id": "25dfc15d-06d3-4813-89ac-e33f05ac0a8c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "reviews",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "636ad987-6875-4612-b930-63cefa63fe9b",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "url": "=https://store.steampowered.com/appreviews/292030?json=1&language=turkish&cursor={{ encodeURIComponent($json.cursor || \"*\") }}&num_per_page=100",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1b13fae4-8a84-4e77-a735-96c2db182831",
+      "name": "Steam"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        848,
+        0
+      ],
+      "id": "7353e368-90a4-41d2-b7db-da1fc458e9ec",
+      "name": "Wait",
+      "webhookId": "6693247b-04f1-4afe-8013-aa9e8533eec5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Steam",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Steam": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Steam",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "31b7897f-46bc-4417-b8a1-e79e15e6b7cc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3871295a441d7b1e45a489c97dd6ac8570feb0dd9c1350e11ced9ffd3078bcb"
+  },
+  "id": "VOb65B5kJRHgX7S0",
+  "tags": []
+}
